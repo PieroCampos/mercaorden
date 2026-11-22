@@ -6,15 +6,17 @@ export type NavLink = {
 };
 
 const INICIO: NavLink = { href: "/", label: "Inicio" };
+const PANEL: NavLink = { href: "/panel", label: "Mi panel" };
 
 /** Enlaces de navegación según el rol; null representa a un visitante sin sesión. */
 export function getNavLinks(role: UserRole | null): NavLink[] {
   switch (role) {
     case "admin":
-      return [INICIO, { href: "/admin", label: "Administración" }];
+      return [INICIO, PANEL, { href: "/admin", label: "Administración" }];
     case "comerciante":
+      return [INICIO, PANEL];
     case "transportista":
-      return [INICIO, { href: "/turnos", label: "Turnos" }];
+      return [INICIO, PANEL, { href: "/turnos", label: "Turnos" }];
     default:
       return [
         INICIO,

@@ -9,13 +9,17 @@ describe("getNavLinks", () => {
     expect(hrefs(null)).toEqual(["/", "/login", "/registro"]);
   });
 
-  it("muestra turnos a comerciante y transportista", () => {
-    expect(hrefs("comerciante")).toEqual(["/", "/turnos"]);
-    expect(hrefs("transportista")).toEqual(["/", "/turnos"]);
+  it("muestra turnos solo al transportista", () => {
+    expect(hrefs("transportista")).toEqual(["/", "/panel", "/turnos"]);
+    expect(hrefs("comerciante")).not.toContain("/turnos");
+  });
+
+  it("muestra mi panel a los roles con sesión", () => {
+    expect(hrefs("comerciante")).toEqual(["/", "/panel"]);
   });
 
   it("muestra administración solo al admin", () => {
-    expect(hrefs("admin")).toEqual(["/", "/admin"]);
+    expect(hrefs("admin")).toEqual(["/", "/panel", "/admin"]);
     expect(hrefs("comerciante")).not.toContain("/admin");
   });
 });

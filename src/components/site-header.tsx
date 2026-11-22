@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { cerrarSesion } from "@/app/actions";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { getNavLinks } from "@/lib/navigation";
 import type { Profile } from "@/lib/types";
 
@@ -19,6 +21,13 @@ export function SiteHeader({ profile }: { profile: Profile | null }) {
             </Link>
           ))}
           {profile ? <Badge variant="secondary">{profile.role}</Badge> : null}
+          {profile ? (
+            <form action={cerrarSesion}>
+              <Button type="submit" variant="outline" size="sm">
+                Cerrar sesión
+              </Button>
+            </form>
+          ) : null}
         </nav>
       </div>
     </header>
