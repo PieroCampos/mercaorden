@@ -23,6 +23,13 @@ export type TimeSlot = {
   capacity: number;
 };
 
+/** Fila devuelta por la función get_slot_availability. */
+export type SlotAvailability = Omit<TimeSlot, "id"> & {
+  slot_id: string;
+  booked: number;
+  available: number;
+};
+
 export type Booking = {
   id: string;
   slot_id: string;

@@ -94,7 +94,16 @@ Cualquier rol distinto de `transportista`, incluido `admin`, se registra como `c
 - El trigger `bookings_enforce_rules` impide superar `capacity`, incluso con reservas simultáneas. Error: `La franja no tiene cupos disponibles` (código `P0001`).
 - Duplicado de franja y usuario: código `23505`.
 - **Volver a reservar tras cancelar:** por la restricción única, actualizar la fila existente a `status = 'confirmado'` (y `plate` si cambió). No insertar otra.
-- Un usuario no puede contar las reservas ajenas por RLS. Para mostrar cupos, MO-10 debe acordar antes una migración nueva con una función o vista de disponibilidad.
+- Un usuario no puede leer las reservas ajenas por RLS. Para mostrar cupos, usar la función `get_slot_availability`, disponible para usuarios autenticados:
+
+```ts
+const { data, error } = await supabase.rpc("get_slot_availability", {
+  p_slot_date: "2026-12-01",
+});
+// data: SlotAvailability[], ordenado por start_time y dock
+```
+
+Devuelve `slot_id`, `slot_date`, `start_time`, `end_time`, `dock`, `capacity`, `booked` (reservas confirmadas) y `available`. Es informativa: la garantía de capacidad la da el trigger al reservar.
 
 ## Administración (MO-22)
 
@@ -124,4 +133,4 @@ Las rutas protegidas llaman a `requireRole` en el servidor. El cierre de sesión
 | `createClient()` | `src/lib/supabase/client.ts` | Síncrono, para componentes de cliente |
 | `getNavLinks(role)` | `src/lib/navigation.ts` | Enlaces por rol |
 
-Los tipos `Profile`, `TimeSlot`, `Booking`, `UserRole`, `ApprovalStatus` y `BookingStatus` están en `src/lib/types.ts`.
+Los tipos `Profile`, `TimeSlot`, `SlotAvailability`, `Booking`, `UserRole`, `ApprovalStatus` y `BookingStatus` están en `src/lib/types.ts`.

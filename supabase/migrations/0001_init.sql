@@ -262,6 +262,43 @@ create policy "bookings_update_own_approved"
     and (status = 'cancelado' or (select public.is_approved()))
   );
 
+-- Disponibilidad por franja: expone solo totales, nunca datos de otras reservas.
+create function public.get_slot_availability(p_slot_date date)
+returns table (
+  slot_id uuid,
+  slot_date date,
+  start_time time,
+  end_time time,
+  dock int,
+  capacity int,
+  booked int,
+  available int
+)
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select
+    s.id,
+    s.slot_date,
+    s.start_time,
+    s.end_time,
+    s.dock,
+    s.capacity,
+    count(b.id)::int,
+    greatest(s.capacity - count(b.id)::int, 0)
+  from public.time_slots s
+  left join public.bookings b
+    on b.slot_id = s.id and b.status = 'confirmado'
+  where s.slot_date = p_slot_date
+  group by s.id
+  order by s.start_time, s.dock;
+$$;
+
+revoke execute on function public.get_slot_availability(date) from public, anon;
+grant execute on function public.get_slot_availability(date) to authenticated;
+
 -- Privilegios mínimos por tabla.
 revoke all on public.profiles, public.time_slots, public.bookings from anon;
 revoke all on public.profiles, public.time_slots, public.bookings from authenticated;
