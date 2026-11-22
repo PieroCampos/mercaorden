@@ -90,7 +90,7 @@ Cualquier rol distinto de `transportista`, incluido `admin`, se registra como `c
 
 ## Reservas (MO-10)
 
-- Solo reservan perfiles `comerciante` o `transportista` con `status = 'aprobado'`.
+- La aplicación solo permite reservar a `transportista`. La base de datos (RLS) admite perfiles `comerciante` o `transportista` con `status = 'aprobado'`.
 - El trigger `bookings_enforce_rules` impide superar `capacity`, incluso con reservas simultáneas. Error: `La franja no tiene cupos disponibles` (código `P0001`).
 - Duplicado de franja y usuario: código `23505`.
 - **Volver a reservar tras cancelar:** por la restricción única, actualizar la fila existente a `status = 'confirmado'` (y `plate` si cambió). No insertar otra.
@@ -111,17 +111,18 @@ Devuelve `slot_id`, `slot_date`, `start_time`, `end_time`, `dock`, `capacity`, `
 - Rechazar: `update profiles set status = 'rechazado', rejection_reason = <motivo>`.
 - Turnos del día: leer `time_slots` por `slot_date` y sus `bookings`.
 
-## Rutas previstas
+## Rutas
 
 | Ruta | Acceso | Historia |
 | --- | --- | --- |
 | `/` | Público | MO-25 |
 | `/registro` | Público | MO-2 |
 | `/login` | Público | MO-2 |
-| `/turnos` | `comerciante`, `transportista` | MO-10 |
+| `/panel` | Con sesión | MO-2 |
+| `/turnos` | `transportista` | MO-10 |
 | `/admin` | `admin` | MO-22 |
 
-Las rutas protegidas llaman a `requireRole` en el servidor. El cierre de sesión corresponde a MO-2.
+`/turnos` y `/admin` llaman a `requireRole` en la página y en sus server actions. `/panel` exige sesión con `getCurrentProfile`. El cierre de sesión está en el encabezado.
 
 ## Helpers
 

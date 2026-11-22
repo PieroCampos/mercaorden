@@ -21,7 +21,7 @@ export function isUuid(value: unknown): value is string {
 export function normalizePlate(raw: unknown): string | null {
   if (typeof raw !== "string") return null;
   const compact = raw.toUpperCase().replace(/[\s-]/g, "");
-  if (!/^[A-Z0-9]{3}\d{3}$/.test(compact)) return null;
+  if (!/^[A-Z][A-Z0-9][A-Z]\d{3}$/.test(compact)) return null;
   return `${compact.slice(0, 3)}-${compact.slice(3)}`;
 }
 
