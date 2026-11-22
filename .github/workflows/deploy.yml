@@ -1,4 +1,4 @@
-﻿name: Deploy
+name: Deploy
 
 on:
   push:
@@ -20,7 +20,7 @@ jobs:
       NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -52,7 +52,7 @@ jobs:
       - if: steps.secretos.outputs.disponibles == 'true'
         uses: actions/checkout@v4
       - if: steps.secretos.outputs.disponibles == 'true'
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
       - if: steps.secretos.outputs.disponibles == 'true'
         uses: actions/setup-node@v4
         with:
