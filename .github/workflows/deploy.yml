@@ -1,0 +1,80 @@
+﻿name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-main
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build y pruebas
+    runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
+      - run: pnpm build
+
+  deploy:
+    name: Deploy a Vercel
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - name: Comprobar secretos de Vercel
+        id: secretos
+        run: |
+          if [ -n "$VERCEL_TOKEN" ] && [ -n "$VERCEL_ORG_ID" ] && [ -n "$VERCEL_PROJECT_ID" ]; then
+            echo "disponibles=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "disponibles=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Faltan secretos de Vercel (VERCEL_TOKEN, VERCEL_ORG_ID o VERCEL_PROJECT_ID). Se omite el despliegue."
+          fi
+      - if: steps.secretos.outputs.disponibles == 'true'
+        uses: actions/checkout@v4
+      - if: steps.secretos.outputs.disponibles == 'true'
+        uses: pnpm/action-setup@v4
+      - if: steps.secretos.outputs.disponibles == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - if: steps.secretos.outputs.disponibles == 'true'
+        run: pnpm dlx vercel@66.6.0 pull --yes --environment=production --token="$VERCEL_TOKEN"
+      - if: steps.secretos.outputs.disponibles == 'true'
+        run: pnpm dlx vercel@66.6.0 build --prod --token="$VERCEL_TOKEN"
+      - if: steps.secretos.outputs.disponibles == 'true'
+        run: pnpm dlx vercel@66.6.0 deploy --prebuilt --prod --token="$VERCEL_TOKEN"
+
+  sincronizar-test:
+    name: Sincronizar test
+    needs: [build, deploy]
+    if: ${{ always() && needs.build.result == 'success' && needs.deploy.result == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: git push origin main:test
+
