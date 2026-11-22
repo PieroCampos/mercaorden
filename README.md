@@ -29,7 +29,18 @@ cp .env.example .env.local
 pnpm dev
 ```
 
-Completa `.env.local` con los datos de tu proyecto Supabase, aplica `supabase/migrations/0001_init.sql` desde el SQL Editor y abre http://localhost:3000.
+Completa `.env.local` con los datos de tu proyecto Supabase, aplica `supabase/migrations/0001_init.sql` desde el SQL Editor y abre http://localhost:3000. Para cargar datos de ejemplo y crear un administrador, sigue la [guía de desarrollo](docs/DESARROLLO.md#datos-de-ejemplo-y-usuarios).
+
+## Pantallas
+
+| Ruta | Acceso | Función |
+| --- | --- | --- |
+| `/` | Público | Inicio |
+| `/registro` | Público | Crear cuenta de comerciante o transportista |
+| `/login` | Público | Iniciar sesión |
+| `/panel` | Con sesión | Ver datos y estado de la cuenta |
+| `/turnos` | Transportista | Reservar franja y andén |
+| `/admin` | Administrador | Aprobar o rechazar comerciantes y ver los turnos del día |
 
 ## Variables de entorno
 
@@ -44,3 +55,4 @@ Completa `.env.local` con los datos de tu proyecto Supabase, aplica `supabase/mi
 
 - [Guía de desarrollo](docs/DESARROLLO.md)
 - [Contrato técnico](docs/CONTRATO.md)
+- [Pipeline CI/CD](docs/PIPELINE.md)
