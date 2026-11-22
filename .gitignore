@@ -74,6 +74,10 @@ web_modules/
 .cache
 .parcel-cache
 
+# Next.js y Vercel
+next-env.d.ts
+.vercel
+
 # Next.js build output
 .next
 out
