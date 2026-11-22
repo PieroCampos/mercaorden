@@ -1,4 +1,4 @@
-﻿name: CI
+name: CI
 
 on:
   pull_request:
@@ -82,7 +82,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Revisión de dependencias (solo PR)
         if: github.event_name == 'pull_request'
-        uses: actions/dependency-review-action@v4
+        uses: actions/dependency-review-action@v5
       - name: Vulnerabilidades moderadas (informativo)
         run: pnpm audit --audit-level=moderate || true
       - name: Auditoría (falla con severidad alta o crítica)
