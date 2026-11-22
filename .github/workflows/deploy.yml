@@ -1,4 +1,4 @@
-﻿name: Deploy
+name: Deploy
 
 on:
   push:
@@ -19,7 +19,7 @@ jobs:
       NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
       NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
@@ -50,7 +50,7 @@ jobs:
             echo "::warning::Faltan secretos de Vercel (VERCEL_TOKEN, VERCEL_ORG_ID o VERCEL_PROJECT_ID). Se omite el despliegue."
           fi
       - if: steps.secretos.outputs.disponibles == 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - if: steps.secretos.outputs.disponibles == 'true'
         uses: pnpm/action-setup@v4
       - if: steps.secretos.outputs.disponibles == 'true'
@@ -73,7 +73,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - run: git push origin main:test
